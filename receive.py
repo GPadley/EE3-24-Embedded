@@ -3,17 +3,16 @@ import json
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from collections import deque
-
-x = deque(maxlen=1000)
-y = deque(maxlen=1000)
-z = deque(maxlen=1000)
-n = 0
+n = 25
+x = deque(maxlen=n)
+y = deque(maxlen=n)
+z = deque(maxlen=n)
+plt.ion()
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 1, 1)
 
 
 def animate(data):
-    print(data)
     x.append(data['x'])
     y.append(data['y'])
     z.append(data['z'])
@@ -33,20 +32,17 @@ def on_connect(client, userdata, flags, rc):
 
 # The callback for when a PUBLISH message is received from the server.
 def  on_message(client, userdata, msg):
-    global n
     data = json.loads(msg.payload)
     ani = animation.FuncAnimation(fig, animate(data), interval=10)
-    n += 1
-    print(n)
-    if n == 100:
-        n = 0
-        plt.show()
+    fig.canvas.draw()
+
 
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
 client.connect('192.168.0.10',keepalive=10)
+
 #
 #
 

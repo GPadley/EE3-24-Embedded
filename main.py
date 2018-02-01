@@ -27,7 +27,7 @@ client = MQTTClient('OmarnG','192.168.0.10')
 client.connect()
 n = 0
 while(1):
-    time.sleep_ms(10) #break time
+    time.sleep_ms(100) #break time
     data = i2c.readfrom(adr[0],6) #reads 6 bytes of data, 2 bytes per direction
     temp = unpack('>hhh', data) #unpacks data into a tuple
     xyz = [temp[0],temp[1],temp[2]] #converts to list for manipulation
@@ -41,7 +41,7 @@ while(1):
         else:
             mean = [round((n*mean[0]+xyz[0])/(n+1)),round((n*mean[1]+xyz[1])/(n+1)),round((n*mean[2]+xyz[2])/(n+1))]
             n += 1
-    out = dumps(dict(zip(key,diff)))
+    out = dumps(dict(zip(key,xyz)))
     client.publish('esys/IoT',bytes(out,'utf-8'))
     # print(out)
     # i2c.writeto(adr[0],bytearray([0x03]))
