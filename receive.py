@@ -3,23 +3,23 @@ import json
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from collections import deque
-n = 25
-x = deque(maxlen=n)
-y = deque(maxlen=n)
-z = deque(maxlen=n)
-plt.ion()
-fig = plt.figure()
-ax1 = fig.add_subplot(1, 1, 1)
-
-
-def animate(data):
-    x.append(data['x'])
-    y.append(data['y'])
-    z.append(data['z'])
-    ax1.clear()
-    ax1.plot(x)
-    ax1.plot(y)
-    ax1.plot(z)
+# n = 25
+# x = deque(maxlen=n)
+# y = deque(maxlen=n)
+# z = deque(maxlen=n)
+# plt.ion()
+# fig = plt.figure()
+# ax1 = fig.add_subplot(1, 1, 1)
+#
+#
+# def animate(data):
+#     x.append(data['x'])
+#     y.append(data['y'])
+#     z.append(data['z'])
+#     ax1.clear()
+#     ax1.plot(x)
+#     ax1.plot(y)
+#     ax1.plot(z)
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -33,8 +33,9 @@ def on_connect(client, userdata, flags, rc):
 # The callback for when a PUBLISH message is received from the server.
 def  on_message(client, userdata, msg):
     data = json.loads(msg.payload)
-    ani = animation.FuncAnimation(fig, animate(data), interval=10)
-    fig.canvas.draw()
+    print(data)
+    # ani = animation.FuncAnimation(fig, animate(data), interval=10)
+    # fig.canvas.draw()
 
 
 client = mqtt.Client()
