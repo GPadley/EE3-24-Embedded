@@ -9,6 +9,17 @@ def sub_cb(topic, msg):
     global d
     d = msg
 
+def reset_var():
+    global N,n,a,counter,state,t,starttime,delta
+    N = 3
+    delta = [0]*N
+    n = 0 #mean bias
+    a = 0 #circular buffer
+    counter = 0;
+    state = 0 #case statement
+    t = utime.ticks_ms() #takes the time in ms
+    starttime = utime.ticks_ms()
+
 i2c = I2C(scl=Pin(5),sda = Pin(4), freq = 100000)
 i2c.start()
 adr = i2c.scan()
@@ -30,18 +41,12 @@ while(not sta_if.isconnected()):
 client = MQTTClient('OmarnG','192.168.0.10')
 client.connect()
 client.set_callback(sub_cb)
-c = 1.9478 #circumference of wheel in m
-N   = 3 #list size
-delta = [0]*N #sets list of size N
-n = 0 #mean bias
-a = 0 #circular buffer
-counter = 0;
-state = 0 #case statement
 client.subscribe(b'esys/IoT/Rx')
-t = utime.ticks_ms() #takes the time in ms
-starttime = utime.ticks_ms()
+c = 1.9478 #circumference of wheel in m
+reset_var()
 while(1):
     client.wait_msg()
+    print(d)
     timeout = utime.ticks_ms()
     if d == b'0xFFFFFFFFFFFF':
         print('(Re)Connected and verified')
@@ -52,6 +57,8 @@ while(1):
             if d == b'0xFFFFFFFFFFFF': #checks whether message has been received
                 d = b'0x000000000000' #resets message to prove connection
                 timeout = utime.ticks_ms() #resets timeout
+            elif d == b'0x111111111111':
+                break
 
             utime.sleep_ms(50) #break time
             #reads 6 bytes of data, 2 bytes per direction
@@ -97,5 +104,7 @@ while(1):
                     n += 1
 
             i2c.writeto_mem(adr[0],0x02,bytearray([0x01]))
+        if d == b'0x111111111111':
+            reset_var()
     else:
         print('Wrong verification code')
