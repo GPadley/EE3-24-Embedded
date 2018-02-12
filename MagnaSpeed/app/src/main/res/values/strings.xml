@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">MagnoSpeed</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+    <string name="pref_title_host">MQTT hostname</string>
+    <string name="pref_title_topic_rx">MQTT receive topic</string>
+    <string name="pref_title_topic_tx">MQTT transmit topic</string>
+    <string name="pref_title_message_start">MQTT message for starting</string>
+    <string name="pref_title_message_keep_alive">MQTT message for keepalive</string>
+    <string name="pref_title_message_reset">MQTT message for reset</string>
+    <string name="pref_title_keep_alive_timeout">MQTT keep alive timeout</string>
+
+    <string name="pref_default_host">http://192.168.0.10</string>
+    <string name="pref_default_rx">esys/IoT/Rx</string>
+    <string name="pref_default_tx">esys/IoT/Tx</string>
+    <string name="pref_default_message_start">0xFFFFFFFFFFFF</string>
+    <string name="pref_default_message_keep_alive">0x111111111111</string>
+    <string name="pref_default_message_reset">0x000000000000</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+</resources>
