@@ -11,12 +11,12 @@ def sub_cb(topic, msg):
     rx_msg = msg
 
 def reset_var():
+    global data,n,state,starttime
     n = 0 #mean bias
-    data = {'t':0,'s':0,'m':0,'a':0,'d':0}
+    data = {'t':utime.ticks_ms(),'s':0,'m':0,'a':0,'d':0}
     counter = 0;
     state = 0 #case statement
     starttime = utime.ticks_ms()
-    return n,data,counter,state,starttime
 
 def mean_calc(n,mean,input):
     if n == 0:
@@ -24,14 +24,12 @@ def mean_calc(n,mean,input):
     else:
         mean = [round((n*mean[0]+input[0])/(n+1)),round((n*mean[1]+input[1])/(n+1)),round((n*mean[2]+input[2])/(n+1))]
         n += 1
-    return n, mean
+    return mean
 
 
 start_msg = b'0xFFFFFFFFFFFF'
 reset_msg = b'0x111111111111'
 kill_msg = b'0xAAAAAAAAAAAA'
-thresh = 4000000
-
 
 i2c = I2C(scl=Pin(5),sda = Pin(4), freq = 100000)
 i2c.start()
@@ -61,10 +59,10 @@ def pub_message(data):
     client.publish('esys/IoT/Tx',bytes(out,'utf-8')) #submits to the receiver
 
 circ = 1.9478 #circumference of wheel in m
-# client.wait_msg()
 while(1):
     client.wait_msg()
-    n, data, counter, state, starttime = reset_var()
+    print(rx_msg)
+    reset_var()
     if rx_msg == start_msg:
         print('Connected and verified')
         while(1):
@@ -73,7 +71,7 @@ while(1):
             if rx_msg == reset_msg:
                 rx_msg = b'0x000000000000'
                 print('Reset message recieved')
-                n, data, counter, state, starttime = reset_var()
+                reset_var()
             elif rx_msg == kill_msg:
                 print('Kill message received')
                 break
@@ -87,19 +85,24 @@ while(1):
                 mean = xyz #allows bias averaging
             diff = [xyz[0]-mean[0],xyz[1]-mean[1],xyz[2]-mean[2]] #normalises data
             mag = (diff[0]*diff[0]+diff[1]*diff[1]+diff[2]*diff[2]) #(pow(diff[0],2)+pow(diff[1],2)+pow(diff[2],2)) #sees how far away from the norm the data is
-            if(utime.ticks_diff(utime.ticks_diff(utime.ticks_ms(),starttime),data['t'])>2000 and state != 2):
-                state = 2
+            print(mag)
+            print(n)
+            if(utime.ticks_diff(utime.ticks_ms(),data['t'])>2000 and state != 3):
+                print('Timeout')
+                state = 3
                 data['s'] = 0
                 data['t'] = utime.ticks_diff(utime.ticks_ms(),starttime) #restart time
                 pub_message(data)
 
-            if mag >= thresh and state != 1: #looks for impulse from magnet
+            if mag >= 4000000 and state != 1: #looks for impulse from magnet
+                print('Detection')
                 state = 1 #changes state
 
-            elif mag < thresh and state == 1:  #looks for magnet to be moved away
+            elif mag < 4000000 and state == 1:  #looks for magnet to be moved away
+                print('Magnet removal')
                 state = 0 #resets state
-                data['s'] = 1000*circ/(utime.ticks_diff(utime.ticks_diff(utime.ticks_ms(),starttime),data['t'])) #calculates speed in m/s and inputs into circular buffer
-                data['t'] = utime.ticks_diff(utime.ticks_ms(),starttime)  #restart time
+                data['s'] = 1000*circ/(utime.ticks_diff(utime.ticks_ms(),data['t'])) #calculates speed in m/s and inputs into circular buffer
+                data['t'] = utime.ticks_diff(utime.ticks_ms(),starttime) #restart time
                 if counter == 0:
                     data['d'] = circ
                     data['a'] = 1000*circ/(utime.ticks_diff(utime.ticks_ms(),starttime))
@@ -113,7 +116,7 @@ while(1):
                     data['m'] = data['s']
                 pub_message(data)
             elif mag <= 20: #if larger than 20 then recalculate the mean
-                n, mean = mean_calc(n,mean,xyz)
+                mean = mean_calc(n,mean,xyz)
 
             i2c.writeto_mem(adr[0],0x02,bytearray([0x01]))
     else:
