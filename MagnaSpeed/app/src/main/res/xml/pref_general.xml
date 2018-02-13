@@ -49,22 +49,14 @@
         android:title="@string/pref_title_message_reset" />
 
     <EditTextPreference
-        android:defaultValue="@string/pref_default_message_keep_alive"
+        android:defaultValue="@string/pref_default_message_kill"
         android:inputType="text"
-        android:key="mqtt_message_keep_alive"
+        android:key="mqtt_message_kill"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
-        android:title="@string/pref_title_message_keep_alive" />
+        android:title="@string/pref_title_message_kill" />
 
 
-    <EditTextPreference
-        android:defaultValue='5'
-        android:inputType="number"
-        android:key="mqtt_keep_alive_timeout"
-        android:maxLines="1"
-        android:selectAllOnFocus="true"
-        android:singleLine="true"
-        android:title="@string/pref_title_keep_alive_timeout" />
 
 </PreferenceScreen>

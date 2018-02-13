@@ -143,8 +143,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("mqtt_topic_tx"));
             bindPreferenceSummaryToValue(findPreference("mqtt_message_start"));
             bindPreferenceSummaryToValue(findPreference("mqtt_message_reset"));
-            bindPreferenceSummaryToValue(findPreference("mqtt_message_keep_alive"));
-            bindPreferenceSummaryToValue(findPreference("mqtt_keep_alive_timeout"));
+            bindPreferenceSummaryToValue(findPreference("mqtt_message_kill"));
 
         }
 
