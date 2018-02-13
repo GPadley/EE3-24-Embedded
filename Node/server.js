@@ -24,6 +24,9 @@ let dataSchema = require('./schema.js');
 // make mongo model
 let dataModel = mongoose.model("hermes", dataSchema);
 
+var yData = [];
+
+
 // --------------------------------------------------------------------------
 // Settings over, here begins the actual code (tm)
 // --------------------------------------------------------------------------
@@ -56,7 +59,9 @@ function passToMongo(dataIn)
 // process data and pass to webpage for graphing
 function passToGraph(response)
 {
-
+  response.forEach(function(item) {
+  yData.push(item.cur_speed);
+  });
 }
 
 // Query Mongo for data
@@ -65,15 +70,17 @@ function runQuery()
   var query = dataModel.find({ 'device_id': '1' });
   query.select('real_time rel_time cur_speed');
   query.sort({'real_time': -1});
-  query.limit(10);
+  query.limit(100);
   var response = query.exec(function (err, out) {
     if (err) return handleError(err);
       passToGraph(out);
   })
 }
 
+// Query mongo every 1 second
+// setInterval(runQuery, 1000);
 
-setInterval(runQuery, 1000);
+runQuery();
 
 // When connected to broker, subscribe to topics and publish start command.
 client.on('connect', function () {
@@ -90,7 +97,7 @@ client.on('message', function (topic, message) {
 
 // setup webpage
 app.get("/", (req, res) => {
-  res.render('index');
+  res.render('index', {yList: yData});
 });
 
 // use bodyparser to read through form submision
