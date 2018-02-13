@@ -19,20 +19,13 @@ const port = 3000;
 mongoose.Promise = global.Promise;
 mongoose.connect("mongodb://localhost:27017/embedded")
 
-// get schema from schema.js
-var dataSchema = require('./schema.js');
-
-// make mongo model
-var dataModel = mongoose.model("hermes", dataSchema);
-
 // Parse data and send to mongo
 function passToMongo(dataIn)
 {
-  // if data is the start message we have sent then return without pasring JSON
-  // if(dataIn == '0xFFFFFFFFFFFF')
-  // {
-  //   return;
-  // }
+  // get schema from schema.js
+  let dataSchema = require('./schema.js');
+  // make mongo model
+  let dataModel = mongoose.model("hermes", dataSchema);
   data = JSON.parse(dataIn); // parse JSON data
   // create instance of model according to dataSchema
   let dataSend = new dataModel({
@@ -54,20 +47,12 @@ function passToMongo(dataIn)
   });
 }
 
-// send heartbeat to device
-function heartbeat()
-{
-  var date = new Date()
-  var time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-  client.publish(topicRx, '0xFFFFFFFFFFFF')
-  console.log('heartbeat', time);
-}
 
-// When connected to broker, subscribe to topics and publish first heartbeat.
+// When connected to broker, subscribe to topics and publish start command.
 client.on('connect', function () {
   client.subscribe([topicTx]);
-  heartbeat();
   console.log('Connected');
+  client.publish(topicRx, '0xFFFFFFFFFFFF')
 })
 
 // When message recieved, print message and push to mongo
@@ -75,12 +60,6 @@ client.on('message', function (topic, message) {
   console.log(topic.toString(), message.toString())
   passToMongo(message);
 })
-
-// call heartbeat() every 5 seconds, starting @ t = 5
-// setInterval(heartbeat, 5000);
-
-// send kill command every 10 seconds - Not Good Idea. Only Use For Testing
-// setInterval(function() {client.publish(topicRx, '0x111111111111')}, 10000)
 
 // setup webpage
 app.get("/", (req, res) => {
