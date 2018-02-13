@@ -72,7 +72,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // log form submission to console
 app.post('/', function (req, res) {
   res.render('index');
-  console.log(req.body.city);
 })
 
 // log to console when webpage is running
