@@ -24,7 +24,7 @@ let dataSchema = require('./schema.js');
 // make mongo model
 let dataModel = mongoose.model("hermes", dataSchema);
 
-var yData = [];
+var yData = []; // global declaration of y-axis data for graphing
 
 
 // --------------------------------------------------------------------------
