@@ -12,22 +12,11 @@ body {
   width: 600px;
   margin: 0 auto;
 }
-fieldset {
-  display: block;
-  -webkit-margin-start: 0px;
-  -webkit-margin-end: 0px;
-  -webkit-padding-before: 0em;
-  -webkit-padding-start: 0em;
-  -webkit-padding-end: 0em;
-  -webkit-padding-after: 0em;
-  border: 0px;
-  border-image-source: initial;
-  border-image-slice: initial;
-  border-image-width: initial;
-  border-image-outset: initial;
-  border-image-repeat: initial;
-  min-width: -webkit-min-content;
-  padding: 30px;
+div.graph{
+  width: 75%;
+  height: 50%;
+  margin: auto;
+
 }
 .ghost-input, p {
   display: block;
