@@ -39,18 +39,18 @@ public class MainActivity extends AppCompatActivity {
             start_message();
         }
         else{
-            mqttCrap.publishKill();
+            mqttstuff.publishKill();
 
         }
     }
 
 
-    MQTTcrap mqttCrap;
+    MQTTstuff mqttstuff;
     TextView dataReceived;
 
     public void startMqtt() {
-        mqttCrap = new MQTTcrap(getApplicationContext());
-        mqttCrap.setCallback(new MqttCallbackExtended() {
+        mqttstuff = new MQTTstuff(getApplicationContext());
+        mqttstuff.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean b, String s) {
 
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void start_message(){
-        mqttCrap.publishStart();
+        mqttstuff.publishStart();
     }
 
 }
