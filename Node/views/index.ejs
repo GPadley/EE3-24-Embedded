@@ -7,6 +7,17 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
     <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
+    <script>
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        async function refresh() {
+            await sleep(1000);
+            location.reload();
+        }
+
+        window.onload = refresh;
+    </script>
   </head>
   <body>
     <div id="myDiv" style="width:70%;height:40%;"></div>
