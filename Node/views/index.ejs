@@ -5,15 +5,19 @@
     <title>Test</title>
     <link rel="stylesheet" type="text/css" href="/css/style.css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
   </head>
   <body>
-    <div class="container">
-      <fieldset>
-        <form action="/" method="post">
-          <input name="city" type="text" class="ghost-input" placeholder="Enter a City" required>
-          <input type="submit" class="ghost-button" value="Get Weather">
-        </form>
-      </fieldset>
-    </div>
+    <div id="myDiv" style="width:70%;height:40%;"></div>
+    <script>
+      var trace = {
+        x: [1, 2, 3, 4, 5],
+        y: [10, 15, 13, 17, 4],
+        type: 'scatter'
+      };
+      var data = [trace];
+      Plotly.newPlot('myDiv', data);
+    </script>
   </body>
 </html>
