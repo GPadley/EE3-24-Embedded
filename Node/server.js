@@ -59,9 +59,11 @@ function passToMongo(dataIn)
 // process data and pass to webpage for graphing
 function passToGraph(response)
 {
+  yData = [];
   response.forEach(function(item) {
   yData.push(item.cur_speed);
   });
+  yData = yData.slice(-200);
 }
 
 // Query Mongo for data
@@ -69,18 +71,15 @@ function runQuery()
 {
   var query = dataModel.find({ 'device_id': '1' });
   query.select('real_time rel_time cur_speed');
-  query.sort({'real_time': -1});
-  query.limit(100);
+  query.sort({'real_time': 1});
   var response = query.exec(function (err, out) {
     if (err) return handleError(err);
       passToGraph(out);
   })
 }
 
-// Query mongo every 1 second
-// setInterval(runQuery, 1000);
-
-runQuery();
+// Query mongo every 0.5 second
+setInterval(runQuery, 500);
 
 // When connected to broker, subscribe to topics and publish start command.
 client.on('connect', function () {
