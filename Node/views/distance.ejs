@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>MagnoSpeed Dashboard | Distance</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
+    <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+  </head>
+  <body>
+    <h1>MagnoSpeed Distance Tracker</h1>
+    <a href="/">Home</a>     <a href="/distance">Distance</a>
+    <canvas id="graph"></canvas>
+    <script>
+        var ctx = document.getElementById('graph').getContext('2d');
+        var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: <%- JSON.stringify(xList); %>,
+          datasets: [{
+            label: "Distance Travelled",
+            backgroundColor: 'rgb(255, 99, 132)',
+            fill: false,
+            borderColor: 'rgb(255, 99, 132)',
+            data: <%- JSON.stringify(yList); %>,
+          }]
+        },
+        options: {
+          animation: false,
+          showXLabels: 5,
+        }
+      });
+    </script>
+  </body>
+</html>
