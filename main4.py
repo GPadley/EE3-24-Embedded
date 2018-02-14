@@ -12,7 +12,7 @@ def sub_cb(topic, msg):
 
 def reset_var(): #reset function
     n = 0 #mean bias
-    mag = [0,0,0]
+    mag = [0,0,0,0,0]
     a = 0;
     data = {'t':0,'s':0,'m':0,'a':0,'d':0} #resets the values
     state = 0 #case statement
@@ -37,7 +37,7 @@ broker_ip = '192.168.0.10'
 device_id = 'magnospeed_v1'
 sub_topic = b'esys/IoT/Rx' #message from app to stop transmission and reading
 pub_topic = 'esys/IoT/Tx' #message from app to stop transmission and reading
-thresh = -120 #threshold value from the sensor
+thresh = 20000000 #threshold value from the sensor
 
 
 
@@ -45,8 +45,8 @@ i2c = I2C(scl=Pin(5),sda = Pin(4), freq = 100000) #sets up the I2C pins and cloc
 i2c.start() #starts reading values
 adr = i2c.scan() #specifies address of sensor
 # i2c.writeto(adr[0],bytearray([0x70, 0xE0, 0x01])) #tells the magnetometer to start reading sensor
-i2c.writeto_mem(adr[0],0x00,bytearray([0x18])) #tells the sensor to continuously read data
-i2c.writeto_mem(adr[0],0x01,bytearray([0x80])) #tells the sensor to continuously read data
+i2c.writeto_mem(adr[0],0x00,bytearray([0x70])) #tells the sensor to continuously read data
+i2c.writeto_mem(adr[0],0x01,bytearray([0xA0])) #tells the sensor to continuously read data
 i2c.writeto_mem(adr[0],0x02,bytearray([0x01])) #tells the sensor to continuously read data
 
 def sensor_read(adr):
@@ -93,12 +93,12 @@ while(1):
                 rx_msg = b'0x000000000000' #resets so that the values aren't contantly set to 0
                 print('Reset message recieved')
                 n, data, state, starttime, mag, a = reset_var()
-                pub_message(data)
 
             elif rx_msg == kill_msg:
                 print('Kill message received')
                 break
 
+            utime.sleep_ms(10) #break time
             #reads 6 bytes of data, 2 bytes per direction
             sensor = sensor_read(adr[0])
 
@@ -108,19 +108,18 @@ while(1):
             diff = [sensor[0]-mean[0],sensor[1]-mean[1],sensor[2]-mean[2]] #normalises data
 
             #calculates magnitude of the sensor values
-            mag_avg = sensor[2] #sees how far away from the norm the data is
-            # a = (a+1)%len(mag)
-            # mag_avg = (mag[0]+mag[1]+mag[2])/3
+            mag[a] = (pow(diff[0],2)+pow(diff[1],2)+pow(diff[2],2)) #sees how far away from the norm the data is
+            a = (a+1)%len(mag)
+            mag_avg = (mag[0]+mag[1]+mag[2]+mag[3]+mag[4])/5
             if(utime.ticks_diff(utime.ticks_diff(utime.ticks_ms(),starttime),data['t'])>2000): #if the wheel hasn't turned for 2 seconds set speed to 0
                 data['s'] = 0 #reset speed
                 data['t'] = utime.ticks_diff(utime.ticks_ms(),starttime) #restart time
-                data['a'] = 1000*data['d']/(utime.ticks_diff(utime.ticks_ms(),starttime))
                 pub_message(data) #transmit
 
-            if mag_avg < thresh and state != 1: #looks for impulse from magnet
+            if mag_avg >= thresh and state != 1: #looks for impulse from magnet
                 state = 1 #changes state
 
-            elif mag_avg >= thresh and state == 1:  #looks for magnet to be moved away
+            elif mag_avg < thresh and state == 1:  #looks for magnet to be moved away
                 state = 0 #resets state
                 data['s'] = 1000*circ/(utime.ticks_diff(utime.ticks_diff(utime.ticks_ms(),starttime),data['t'])) #calculates speed in m/s and inputs into circular buffer
                 data['t'] = utime.ticks_diff(utime.ticks_ms(),starttime)  #restart time
