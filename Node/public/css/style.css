@@ -8,6 +8,15 @@ h1 {
   color: #aaaaaa;
 }
 
+a.link {
+  color: #aaaaaa;
+}
+
+a.active {
+  color: #000000;
+  text-decoration: underline;
+}
+
 canvas.graph {
   width: 90%;
   height: 60%;
