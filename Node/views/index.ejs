@@ -7,7 +7,7 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
     <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
-    <!-- <script>
+    <script>
         function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
@@ -15,36 +15,33 @@
             await sleep(500);
             location.reload();
         }
-
         window.onload = refresh;
-    </script> -->
+    </script>
   </head>
   <body>
     <h1>MagnoSpeed Dashboard</h1>
+    <a href="/">Home</a>     <a href="/distance">Distance</a>
     <canvas id="graph"></canvas>
     <script>
         var ctx = document.getElementById('graph').getContext('2d');
         var chart = new Chart(ctx, {
         type: 'line',
-
-        // The data for our dataset
         data: {
           labels: <%- JSON.stringify(xList); %>,
           datasets: [{
-            label: "Wheel Speeds",
+            label: "Wheel Speed",
             backgroundColor: 'rgb(255, 99, 132)',
             fill: false,
             borderColor: 'rgb(255, 99, 132)',
             data: <%- JSON.stringify(yList); %>,
           }]
         },
-
-        // Configuration options go here
         options: {
           animation: false,
           showXLabels: 5,
         }
       });
     </script>
+    <p> Your next goal is <%=goal%> m/s <p>
   </body>
 </html>
