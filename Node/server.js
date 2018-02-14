@@ -26,6 +26,10 @@ let dataModel = mongoose.model("hermes", dataSchema);
 
 var yData = []; // global declaration of y-axis data for graphing
 var xData = []; // gloabal declaration of x-axis data for graphing
+var target = 0;
+var onindex = false;
+var xDistance = [];
+var yDistance = [];
 
 
 // --------------------------------------------------------------------------
@@ -39,11 +43,10 @@ function passToMongo(dataIn)
   // make Data String
   // rn = Date.now();
   // dt = String((rn.getHours() + ':' + rn.getMinutes() + ':' + rn.getSeconds());
-  console.log(dt);
   // create instance of model according to dataSchema
   let dataSend = new dataModel({
     device_id: '1',
-    real_time: dt,
+    real_time: new Date(),
     rel_time: data.t,
     cur_speed: data.s,
     max_speed: data.m,
@@ -58,6 +61,29 @@ function passToMongo(dataIn)
   .catch(err => {
     console.log('unable to save to database');
   });
+}
+
+function threeDayQuery()
+{
+  onindex = false;
+  var query = dataModel.find({ 'device_id': '1' });
+  query.select('real_time rel_time distance');
+  query.sort({'real_time': -1});
+  query.limit(1000);
+  var response = query.exec(function (err, out) {
+    if (err) return handleError(err);
+      let outR = out.reverse();
+      xDistance = [];
+      yDistance = [];
+      outR.forEach(function(item){
+        yDistance.push(item.distance);
+        d = new Date(item.real_time);
+        d8 = String(d.getUTCHours() + ':' + d.getUTCMinutes() + ':' + d.getUTCSeconds());
+        xDistance.push(d8);
+      })
+    })
+    yDistance = yDistance.slice(-1000);
+    xDistance = xDistance.slice(-1000);
 }
 
 
@@ -75,11 +101,18 @@ function passToGraph(response)
   });
   yData = yData.slice(-200);
   xData = xData.slice(-200);
+  target = Math.floor(Math.max(...yData));
+  if(target > 20) target+=2;
+  else if(target > 15) target+=3;
+  else if(target > 10) target+=4;
+  else target+=5;
+  runQuery();
 }
 
 // Query Mongo for data
 function runQuery()
 {
+  onindex = true;
   var query = dataModel.find({ 'device_id': '1' });
   query.select('real_time rel_time cur_speed');
   query.sort({'real_time': -1});
@@ -91,13 +124,12 @@ function runQuery()
 }
 
 // Query mongo every 0.5 second
-setInterval(runQuery, 1000);
 
 // When connected to broker, subscribe to topics and publish start command.
 client.on('connect', function () {
   client.subscribe([topicTx]);
-  console.log('Connected');
-  client.publish(topicRx, '0xFFFFFFFFFFFF')
+  console.log('Connected to Broker');
+  client.publish(topicRx, '0xFFFFFFFFFFFF');
 })
 
 // When message recieved, print message and push to mongo
@@ -108,16 +140,22 @@ client.on('message', function (topic, message) {
 
 // setup webpage
 app.get("/", (req, res) => {
-  res.render('index', {yList: yData, xList: xData});
+  res.render('index', {yList: yData, xList: xData,goal:target});
+  if(!onindex)
+  {
+    runQuery();
+  }
 });
 
 // use bodyparser to read through form submision
 app.use(bodyParser.urlencoded({ extended: true }));
+app.get('/distance', (req, res) => {
+  threeDayQuery();
+  res.render('distance', {yList: yDistance, xList: xDistance});
+  console.log('3 Day');
 
-// log form submission to console
-app.post('/', function (req, res) {
-  res.render('index');
-})
+});
+
 
 // log to console when webpage is running
 app.listen(port, () => {
