@@ -2,22 +2,49 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Test</title>
+    <title>MagnoSpeed Dashboard</title>
     <link rel="stylesheet" type="text/css" href="/css/style.css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
-    <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+    <!-- <script>
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        async function refresh() {
+            await sleep(500);
+            location.reload();
+        }
+
+        window.onload = refresh;
+    </script> -->
   </head>
   <body>
-    <div id="myDiv" style="width:70%;height:40%;"></div>
+    <h1>MagnoSpeed Dashboard</h1>
+    <canvas id="graph"></canvas>
     <script>
-      var trace = {
-        x: [1, 2, 3, 4, 5],
-        y: [10, 15, 13, 17, 4],
-        type: 'scatter'
-      };
-      var data = [trace];
-      Plotly.newPlot('myDiv', data);
+        var ctx = document.getElementById('graph').getContext('2d');
+        var chart = new Chart(ctx, {
+        type: 'line',
+
+        // The data for our dataset
+        data: {
+          labels: <%- JSON.stringify(xList); %>,
+          datasets: [{
+            label: "Wheel Speeds",
+            backgroundColor: 'rgb(255, 99, 132)',
+            fill: false,
+            borderColor: 'rgb(255, 99, 132)',
+            data: <%- JSON.stringify(yList); %>,
+          }]
+        },
+
+        // Configuration options go here
+        options: {
+          animation: false,
+          showXLabels: 5,
+        }
+      });
     </script>
   </body>
 </html>

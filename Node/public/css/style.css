@@ -3,32 +3,28 @@
   https://codepen.io/official_naveen/pen/rgknI
 */
 
+
+h1 {
+  color: #aaaaaa;
+}
+
+canvas.graph {
+  width: 90%;
+  height: 60%;
+  margin: auto;
+}
+
 body {
-  width: 800px;
+  width: 90%;
   margin: 0 auto;
   font-family: 'Open Sans', sans-serif;
 }
+
 .container {
   width: 600px;
   margin: 0 auto;
 }
-fieldset {
-  display: block;
-  -webkit-margin-start: 0px;
-  -webkit-margin-end: 0px;
-  -webkit-padding-before: 0em;
-  -webkit-padding-start: 0em;
-  -webkit-padding-end: 0em;
-  -webkit-padding-after: 0em;
-  border: 0px;
-  border-image-source: initial;
-  border-image-slice: initial;
-  border-image-width: initial;
-  border-image-outset: initial;
-  border-image-repeat: initial;
-  min-width: -webkit-min-content;
-  padding: 30px;
-}
+
 .ghost-input, p {
   display: block;
   font-weight:300;

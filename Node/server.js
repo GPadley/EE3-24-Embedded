@@ -19,18 +19,31 @@ const port = 3000;
 mongoose.Promise = global.Promise;
 mongoose.connect("mongodb://localhost:27017/embedded")
 
+// get schema from schema.js
+let dataSchema = require('./schema.js');
+// make mongo model
+let dataModel = mongoose.model("hermes", dataSchema);
+
+var yData = []; // global declaration of y-axis data for graphing
+var xData = []; // gloabal declaration of x-axis data for graphing
+
+
+// --------------------------------------------------------------------------
+// Settings over, here begins the actual code (tm)
+// --------------------------------------------------------------------------
+
 // Parse data and send to mongo
 function passToMongo(dataIn)
 {
-  // get schema from schema.js
-  let dataSchema = require('./schema.js');
-  // make mongo model
-  let dataModel = mongoose.model("hermes", dataSchema);
-  data = JSON.parse(dataIn); // parse JSON data
+  var data = JSON.parse(dataIn); // parse JSON data
+  // make Data String
+  // rn = Date.now();
+  // dt = String((rn.getHours() + ':' + rn.getMinutes() + ':' + rn.getSeconds());
+  console.log(dt);
   // create instance of model according to dataSchema
   let dataSend = new dataModel({
     device_id: '1',
-    real_time: new Date(),
+    real_time: dt,
     rel_time: data.t,
     cur_speed: data.s,
     max_speed: data.m,
@@ -48,6 +61,38 @@ function passToMongo(dataIn)
 }
 
 
+// process data and pass to webpage for graphing
+function passToGraph(response)
+{
+  let responseR = response.reverse();
+  yData = [];
+  xData = [];
+  responseR.forEach(function(item) {
+    yData.push(item.cur_speed);
+    d = new Date(item.real_time);
+    d8 = String(d.getUTCHours() + ':' + d.getUTCMinutes() + ':' + d.getUTCSeconds());
+    xData.push(d8);
+  });
+  yData = yData.slice(-200);
+  xData = xData.slice(-200);
+}
+
+// Query Mongo for data
+function runQuery()
+{
+  var query = dataModel.find({ 'device_id': '1' });
+  query.select('real_time rel_time cur_speed');
+  query.sort({'real_time': -1});
+  query.limit(200);
+  var response = query.exec(function (err, out) {
+    if (err) return handleError(err);
+      passToGraph(out);
+  })
+}
+
+// Query mongo every 0.5 second
+setInterval(runQuery, 1000);
+
 // When connected to broker, subscribe to topics and publish start command.
 client.on('connect', function () {
   client.subscribe([topicTx]);
@@ -63,7 +108,7 @@ client.on('message', function (topic, message) {
 
 // setup webpage
 app.get("/", (req, res) => {
-  res.render('index');
+  res.render('index', {yList: yData, xList: xData});
 });
 
 // use bodyparser to read through form submision
@@ -72,7 +117,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // log form submission to console
 app.post('/', function (req, res) {
   res.render('index');
-  console.log(req.body.city);
 })
 
 // log to console when webpage is running
