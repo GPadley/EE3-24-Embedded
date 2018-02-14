@@ -11,8 +11,10 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "chart.js": "^2.7.1",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
+    "moment": "^2.20.1",
     "mongoose": "^5.0.4",
     "mqtt": "^2.15.1",
     "plotly": "^1.0.6"

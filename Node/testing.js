@@ -1,2 +1,2 @@
-var data =  new Date();
-console.log(data);
+x = String('t' + 5);
+console.log(x);

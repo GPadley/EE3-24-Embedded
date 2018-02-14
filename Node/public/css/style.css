@@ -3,21 +3,28 @@
   https://codepen.io/official_naveen/pen/rgknI
 */
 
+
+h1 {
+  color: #aaaaaa;
+}
+
+canvas.graph {
+  width: 90%;
+  height: 60%;
+  margin: auto;
+}
+
 body {
-  width: 800px;
+  width: 90%;
   margin: 0 auto;
   font-family: 'Open Sans', sans-serif;
 }
+
 .container {
   width: 600px;
   margin: 0 auto;
 }
-div.graph{
-  width: 75%;
-  height: 50%;
-  margin: auto;
 
-}
 .ghost-input, p {
   display: block;
   font-weight:300;
