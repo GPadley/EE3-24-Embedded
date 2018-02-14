@@ -17,6 +17,8 @@
     <string name="pref_title_message_start">MQTT message for start</string>
     <string name="pref_title_message_kill">MQTT message for killing</string>
     <string name="pref_title_message_reset">MQTT message for reset</string>
+    <string name="pref_title_units">Units</string>
+    <string name="pref_title_wheel_diameter">Wheel diameter in mm</string>
 
     <string name="pref_default_host">tcp://192.168.0.10:1883</string>
     <string name="pref_default_rx">esys/IoT/Rx</string>
@@ -24,6 +26,19 @@
     <string name="pref_default_message_start">0xFFFFFFFFFFFF</string>
     <string name="pref_default_message_kill">0xAAAAAAAAAAAA</string>
     <string name="pref_default_message_reset">0x111111111111</string>
+    <string name="pref_default_wheel_diameter">662</string>
+
+    <string-array name="pref_units_titles">
+        <item>Metric(m)</item>
+        <item>Metric(km)</item>
+        <item>Imperial(miles)</item>
+    </string-array>
+
+    <string-array name="pref_units_entries">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

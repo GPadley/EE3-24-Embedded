@@ -57,6 +57,24 @@
         android:singleLine="true"
         android:title="@string/pref_title_message_kill" />
 
+    <EditTextPreference
+        android:defaultValue="@string/pref_default_wheel_diameter"
+        android:inputType="number"
+        android:key="wheel_diameter"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_wheel_diameter" />
+
+    <ListPreference
+        android:defaultValue="-1"
+        android:entries="@array/pref_units_titles"
+        android:entryValues="@array/pref_units_entries"
+        android:key="units_list"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_units" />
+
 
 
 </PreferenceScreen>
