@@ -28,34 +28,25 @@ import static android.app.PendingIntent.getActivity;
 public class MQTTstuff {
     public MqttAndroidClient mqttAndroidClient;
 
-    /*final String clientId = "OmarnGApp";
-    String serverUri = "tcp:sdfdsfsdfegs//192.168.0.10:1883";
-    String subscriptionTopic = "esys/IoT/Tx";
-    String publishTopic = "esys/IoT/Rx";
-    String startmessage = "0xFFFFFFFFFFFF";
-    String resetmessage = "0x111111111111";
-    String killmessage  = "0xAAAAAAAAAAAA";
-*/
+
 
     final String clientId = "OmarnGApp";
     String serverUri;
     String subscriptionTopic;
     String publishTopic;
-    String startmessage;
-    String resetmessage;
-    String killmessage;
+
 
 
     public MQTTstuff(Context context){
+
+        //Get's stored preferences that are required for MQTT
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(context);
         serverUri = sharedPref.getString("mqtt_host_name", "DEFAULT");
         subscriptionTopic = sharedPref.getString("mqtt_topic_tx","DEFAULT");
         publishTopic = sharedPref.getString("mqtt_topic_rx","DEFAULT");
-        startmessage = sharedPref.getString("mqtt_message_start", "DEFAULT");
-        resetmessage = sharedPref.getString("mqtt_message_reset","DEFAULT");
-        killmessage = sharedPref.getString("mqtt_message_kill","DEFAULT");
 
-        mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
+
+        mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId); //Initialise
 
 
 
@@ -141,7 +132,7 @@ public class MQTTstuff {
         }
     }
 
-
+//Publishes any string to MQTT
     public void publish(String msg) {
 
         try {

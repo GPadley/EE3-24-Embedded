@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     String speedAppend;
     String distanceAppend;
     String unitsID;
+    String wheelDiameter;
     Double speedMultiply;
     Double distanceMultiply;
     SharedPreferences sharedPref;
@@ -90,21 +91,23 @@ public class MainActivity extends AppCompatActivity {
         resetmessage = sharedPref.getString("mqtt_message_reset","DEFAULT");
         killmessage = sharedPref.getString("mqtt_message_kill","DEFAULT");
         unitsID = sharedPref.getString("units_list", "DEFAULT");
-        unitDecoding();
-        startMqtt();
+        wheelDiameter = sharedPref.getString("wheel_diameter", "DEFAULT");
+        unitDecoding();     //Initialise units
+        startMqtt();        //Connect to MQtt broker
     }
 
-    private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
 
     @Override
     public void onResume() {
         super.onResume();
-        unitDecoding();         //Dodgy way of doing things. Couldn't get preferences change listener working
+        unitDecoding();         //When the main activity resumes (i.e. going back from settings page, check if units have changed
     }
 
     public void unitDecoding(){
-        unitsID = sharedPref.getString("units_list", "DEFAULT");
+        //Maps unit preferences to appropriate strings and conversion factors
+
+        unitsID = sharedPref.getString("units_list", "DEFAULT");    //Fetch preference
         if (unitsID.equals("1")){
             speedMultiply = 1.0;
             distanceMultiply = 1.0;
@@ -129,11 +132,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //When the button is pressed, send either the start (+wheel size) or stop message to the IOT device (via MQTT)
     public void toggleclick(View view){
         if(((ToggleButton) view).isChecked()){
-            //WHY CAN't I HAVE START MQTT BEFORE IT. STUPID NULL POINT EXCEPTIONS
+            mqttstuff.publish(wheelDiameter);
             mqttstuff.publish(startmessage);
-//            startMqtt();
         }
         else{
             mqttstuff.publish(killmessage);
@@ -142,16 +145,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void mqttReset(View view){
-        mqttstuff.publish(resetmessage);
-    }
-
+    //Iniitialises the connection the MQTT broker, and sorts callback functions
     public void startMqtt() {
         mqttstuff = new MQTTstuff(getApplicationContext());
         mqttstuff.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean b, String s) {
-//                mqttstuff.publish(startmessage);
             }
 
             @Override
@@ -161,8 +160,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                //When a message arrives and app has read it, this function is called
+                //Parses the JSON
+                //Updates the text display on main page
                 Log.w("Debug", mqttMessage.toString());
-                // String in = mqttMessage.toString();
                 JSONObject dataInput = new JSONObject(mqttMessage.toString());
                 String timePrint  = DateUtils.formatElapsedTime(Integer.parseInt(dataInput.getString("t"))/1000);
                 String distancePrint = Double.toString(Double.parseDouble(dataInput.getString("d")) *distanceMultiply) + distanceAppend;
