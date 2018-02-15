@@ -21,6 +21,7 @@
   <body>
     <h1>MagnoSpeed Dashboard</h1>
     <a href="/">Home</a>     <a href="/distance">Distance</a>
+    <p> Your next goal is <%=goal%> m/s <p>
     <canvas id="graph"></canvas>
     <script>
         var ctx = document.getElementById('graph').getContext('2d');
@@ -42,6 +43,5 @@
         }
       });
     </script>
-    <p> Your next goal is <%=goal%> m/s <p>
   </body>
 </html>
