@@ -24,26 +24,22 @@ let dataSchema = require('./schema.js');
 // make mongo model
 let dataModel = mongoose.model("hermes", dataSchema);
 
-var yData = []; // global declaration of y-axis data for graphing
-var xData = []; // gloabal declaration of x-axis data for graphing
-var target = 0;
-var onindex = false;
-var xDistance = [];
-var yDistance = [];
+var yData = []; // global declaration of y-axis data for graphing (Speed)
+var xData = []; // gloabal declaration of x-axis data for graphing (Speed)
+var target = 0; // speed target
+var onindex = false; // trus if viewing the index page. Used for control of function calls
+var xDistance = []; // global declaration of x-axis data for graphing (Distance)
+var yDistance = []; // global declaration of y-axis data for graphing (Distance)
 
 
 // --------------------------------------------------------------------------
-// Settings over, here begins the actual code (tm)
+// Settings over, here begins the actual code
 // --------------------------------------------------------------------------
 
 // Parse data and send to mongo
 function passToMongo(dataIn)
 {
   var data = JSON.parse(dataIn); // parse JSON data
-  // make Data String
-  // rn = Date.now();
-  // dt = String((rn.getHours() + ':' + rn.getMinutes() + ':' + rn.getSeconds());
-  // create instance of model according to dataSchema
   let dataSend = new dataModel({
     device_id: '1',
     real_time: new Date(),
@@ -63,12 +59,13 @@ function passToMongo(dataIn)
   });
 }
 
-function threeDayQuery()
+// run Query for finding distance travelled
+function distanceQuery()
 {
   onindex = false;
   var query = dataModel.find({ 'device_id': '1' });
   query.select('real_time rel_time distance');
-  query.sort({'real_time': -1});
+  query.sort({'rel_time': -1});
   query.limit(1000);
   var response = query.exec(function (err, out) {
     if (err) return handleError(err);
@@ -150,10 +147,9 @@ app.get("/", (req, res) => {
 // use bodyparser to read through form submision
 app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/distance', (req, res) => {
-  threeDayQuery();
+  distanceQuery();
   res.render('distance', {yList: yDistance, xList: xDistance});
   console.log('3 Day');
-
 });
 
 
