@@ -92,9 +92,10 @@ i2c.writeto_mem(adr[0],0x02,bytearray([0x01])) #tells the sensor to continuously
 
 client = cli_conn(device_id,broker_ip,sub_topic) #connects to the MQTT broker
 
-
+print('Awaiting wheel diameter')
 client.wait_msg() #waits for diameter of the wheel in mm
-diam_mm = eval(rx_msg[2:len(rx_msg)-1]) #parses the wheel diam from the string andd converts into a integer
+diam_str = str(rx_msg) #converts to string so that can pull substring of the wheel diameter
+diam_mm = eval(diam_str[2:len(diam_str)-1]) #parses the wheel diam from the string andd converts into a integer
 circ = pi*diam_mm/1000 #converts into circumference to work out speed and distance in m
 while(1):
     print('Awaiting start message') #awaits the 0xFFFFFFFFFFFF to start the code
